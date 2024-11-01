@@ -15,16 +15,18 @@ def openDatabase():
 
 
 # ADICIONANDO character NA TABELA character
-def add_character(name, armor_class, life_points):
-    dados = (name, armor_class, life_points)
+def add_character(new_character):
+    con = openDatabase()
+    cur = con.cursor()
     sql_insert_character = """
         INSERT INTO character
         VALUES (?,
         ?,
         ?)
     """
-    cur.execute(sql_insert_character, dados)
+    cur.execute(sql_insert_character, new_character)
     con.commit()
+    con.close()
 
 
 # ADICIONANDO monster NA TABELA monster
@@ -110,13 +112,16 @@ def showMonsterBestiary():
 # MONSTRANDO TODOS OS character DA TABELA character
 # ORDENADOS POR NOME
 def showCharacterList():
+    con = openDatabase()
+    cur = con.cursor()
     sql_select_all_characters = """
         SELECT *
         FROM character
         ORDER BY name
     """
-    all_characters = cur.execute(sql_select_all_characters)
-    return all_characters.fetchall
+    cur.execute(sql_select_all_characters)
+    all_characters = cur.fetchall()
+    return all_characters
 
 
 # DELETANDO monster DA TABELA monster USANDO name COMO REFERÊNCIA name

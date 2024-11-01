@@ -19,4 +19,4 @@ Um simples gerenciador de combate para Old Dragon 2e, um sistema de RPG de mesa 
 # Tecnologias Usadas:
 - Python para codificação.
 - SQLite para persistência de dados.
-- XXX para interface gráfica.
+- Tkinter para interface gráfica.
