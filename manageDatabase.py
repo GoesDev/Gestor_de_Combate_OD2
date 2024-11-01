@@ -7,6 +7,13 @@ con = sqlite3.connect("gestor_de_combate.db")
 cur = con.cursor()
 
 
+# CRIANDO CONEXÃO COM O BANCO
+def openDatabase():
+    # CRIANDO CONEXÃO COM O BANCO
+    conn = sqlite3.connect("gestor_de_combate.db")
+    return conn
+
+
 # ADICIONANDO character NA TABELA character
 def add_character(name, armor_class, life_points):
     dados = (name, armor_class, life_points)
@@ -21,16 +28,21 @@ def add_character(name, armor_class, life_points):
 
 
 # ADICIONANDO monster NA TABELA monster
-def add_monster(name, armor_class, life_points):
-    dados = (name, armor_class, life_points)
+def add_monster(new_monster):
+    con = openDatabase()
+    cur = con.cursor()
     sql_insert_monster = """
-        INSERT INTO monster
+        INSERT INTO monster (name,
+        armor_class,
+        life_points)
         VALUES (?,
         ?,
         ?)
     """
-    cur.execute(sql_insert_monster, dados)
+    cur.execute(sql_insert_monster, new_monster)
     con.commit()
+    # FECHANDO CONEXÃO COM O BANCO
+    con.close()
 
 
 # BUSCANDO character NA TABELA character
@@ -82,17 +94,17 @@ def updateCharacter(att_character):
 # MOSTRANDO TODOS OS monster DA TABELA monster
 # ORDENADOS POR NOME
 def showMonsterBestiary():
+    con = openDatabase()
+    cur = con.cursor()
     sql_select_all_monsters = """
         SELECT *
         FROM monster
         ORDER BY name
     """
-    all_monsters = cur.execute(sql_select_all_monsters)
-    for monster in all_monsters:
-        print("Name: ", monster[0],
-              "\nCA: ", monster[1],
-              "PV", monster[2])
-        print("---" * 7)
+    cur.execute(sql_select_all_monsters)
+    all_monsters = cur.fetchall()
+    con.close()
+    return all_monsters
 
 
 # MONSTRANDO TODOS OS character DA TABELA character
@@ -104,11 +116,7 @@ def showCharacterList():
         ORDER BY name
     """
     all_characters = cur.execute(sql_select_all_characters)
-    for character in all_characters:
-        print("Name: ", character[0],
-              "\nCA: ", character[1],
-              "PV", character[2])
-        print("---" * 7)
+    return all_characters.fetchall
 
 
 # DELETANDO monster DA TABELA monster USANDO name COMO REFERÊNCIA name
@@ -129,7 +137,3 @@ def deleteCharacter(del_character):
     """
     cur.execute(sql_delete_character, (del_character,))
     con.commit()
-
-
-# FECHANDO CONEXÃO COM O BANCO
-con.close()
